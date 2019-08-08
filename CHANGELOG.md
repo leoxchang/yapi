@@ -1,3 +1,7 @@
+### v1.8.1
+* 优化插件【Swagger 自动同步】在添加地址时的服务端校验行为
+* 优化单个测试用例执行超时时间限制,从3秒改为10秒
+
 ### v1.8.0
 * filtering interface on the server instead of client
 
