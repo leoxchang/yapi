@@ -8,19 +8,19 @@ class interfaceModel extends baseModel {
 
   getSchema() {
     return {
-      title: { type: String, required: true },
-      uid: { type: Number, required: true },
-      path: { type: String, required: true },
-      method: { type: String, required: true },
-      project_id: { type: Number, required: true },
-      catid: { type: Number, required: true },
-      edit_uid: { type: Number, default: 0 },
-      status: { type: String, enum: ['undone', 'done'], default: 'undone' },
+      title: {type: String, required: true},
+      uid: {type: Number, required: true},
+      path: {type: String, required: true},
+      method: {type: String, required: true},
+      project_id: {type: Number, required: true},
+      catid: {type: Number, required: true},
+      edit_uid: {type: Number, default: 0},
+      status: {type: String, enum: ['undone', 'done'], default: 'undone'},
       desc: String,
       markdown: String,
       add_time: Number,
       up_time: Number,
-      type: { type: String, enum: ['static', 'var'], default: 'static' },
+      type: {type: String, enum: ['static', 'var'], default: 'static'},
       query_path: {
         path: String,
         params: [
@@ -67,11 +67,11 @@ class interfaceModel extends baseModel {
         type: String,
         enum: ['form', 'json', 'text', 'file', 'raw']
       },
-      req_body_is_json_schema: { type: Boolean, default: false },
+      req_body_is_json_schema: {type: Boolean, default: false},
       req_body_form: [
         {
           name: String,
-          type: { type: String, enum: ['text', 'file'] },
+          type: {type: String, enum: ['text', 'file']},
           example: String,
           value: String,
           desc: String,
@@ -88,12 +88,12 @@ class interfaceModel extends baseModel {
         enum: ['json', 'text', 'xml', 'raw', 'json-schema']
       },
       res_body: String,
-      res_body_is_json_schema: { type: Boolean, default: false },
+      res_body_is_json_schema: {type: Boolean, default: false},
       custom_field_value: String,
       field2: String,
       field3: String,
-      api_opened: { type: Boolean, default: false },
-      index: { type: Number, default: 0 },
+      api_opened: {type: Boolean, default: false},
+      index: {type: Number, default: 0},
       tag: Array
     };
   }
@@ -177,7 +177,7 @@ class interfaceModel extends baseModel {
         project_id: project_id
       })
       .select(select)
-      .sort({ title: 1 })
+      .sort({title: 1})
       .exec();
   }
 
@@ -188,7 +188,7 @@ class interfaceModel extends baseModel {
       .find({
         project_id: project_id
       })
-      .sort({ title: 1 })
+      .sort({title: 1})
       .skip((page - 1) * limit)
       .limit(limit)
       .select(
@@ -202,7 +202,7 @@ class interfaceModel extends baseModel {
       .find({
         project_id: project_id
       })
-      .sort({ title: 1 })
+      .sort({title: 1})
       .exec();
   }
 
@@ -219,7 +219,7 @@ class interfaceModel extends baseModel {
         catid: catid
       })
       .select(select)
-      .sort({ index: 1 })
+      .sort({index: 1})
       .exec();
   }
 
@@ -230,7 +230,7 @@ class interfaceModel extends baseModel {
       .find({
         catid: catid
       })
-      .sort({ index: 1 })
+      .sort({index: 1})
       .skip((page - 1) * limit)
       .limit(limit)
       .select(
@@ -268,7 +268,7 @@ class interfaceModel extends baseModel {
     return this.model
       .find(option)
       .select()
-      .sort({ title: 1 })
+      .sort({title: 1})
       .exec();
   }
 
@@ -297,7 +297,7 @@ class interfaceModel extends baseModel {
         _id: id
       },
       data,
-      { runValidators: true }
+      {runValidators: true}
     );
   }
 
@@ -306,10 +306,11 @@ class interfaceModel extends baseModel {
       {
         _id: id
       },
-      { edit_uid: uid },
-      { runValidators: true }
+      {edit_uid: uid},
+      {runValidators: true}
     );
   }
+
   getcustomFieldValue(id, value) {
     return this.model
       .find({
@@ -341,11 +342,25 @@ class interfaceModel extends baseModel {
     return this.model
       .find({
         $or: [
-          { 'title': new RegExp(keyword, 'ig') },
-          { 'path': new RegExp(keyword, 'ig') }
+          {'title': new RegExp(keyword, 'ig')},
+          {'path': new RegExp(keyword, 'ig')}
         ]
       })
       .limit(10);
+  }
+
+  delUnUsed(projectId, upTime) {
+    return this.model.remove({
+      project_id: projectId,
+      'up_time': {$lt: upTime}
+    });
+  }
+
+  findByUpTime(projectId,upTime){
+    return this.model.find({
+      project_id: projectId,
+      'up_time': {$lt: upTime}
+    });
   }
 }
 

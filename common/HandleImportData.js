@@ -1,5 +1,7 @@
 const _ = require('underscore');
 const axios = require('axios');
+const yapi = require('../server/yapi.js');
+const interfaceModel = require('../server/models/interface.js');
 
 
 const isNode = typeof global == 'object' && global.global === global;
@@ -42,7 +44,7 @@ async function handle(
 
           if (result.data.errcode) {
             messageError(result.data.errmsg);
-            callback({ showLoading: false });
+            callback({showLoading: false});
             return false;
           }
           cat.id = result.data.data._id;
@@ -64,9 +66,10 @@ async function handle(
     let existNum = 0;
     if (len === 0) {
       messageError(`解析数据为空`);
-      callback({ showLoading: false });
+      callback({showLoading: false});
       return;
     }
+    let upTime = yapi.commons.time();
     for (let index = 0; index < res.length; index++) {
       let item = res[index];
       let data = Object.assign(item, {
@@ -98,7 +101,7 @@ async function handle(
         let result = await axios.post(apipath, data);
         if (result.data.errcode) {
           successNum--;
-          callback({ showLoading: false });
+          callback({showLoading: false});
           messageError(result.data.errmsg);
         } else {
           existNum = existNum + result.data.data.length;
@@ -117,15 +120,20 @@ async function handle(
             existNum++;
           }
           if (result.data.errcode == 40033) {
-            callback({ showLoading: false });
+            callback({showLoading: false});
             messageError('没有权限');
             break;
           }
         }
       }
+
       if (count === len) {
-        callback({ showLoading: false });
-        messageSuccess(`成功导入接口 ${successNum} 个, 已存在的接口 ${existNum} 个`);
+        callback({showLoading: false});
+        //删除接口
+        await yapi.getInst(interfaceModel).findByUpTime(projectId, upTime);
+        let delRes = await yapi.getInst(interfaceModel).delUnUsed(projectId, upTime);
+        let delNum = delRes.n;
+        messageSuccess(`成功导入接口 ${successNum} 个, 已存在的接口 ${existNum} 个,删除接口${delNum}个`);
       }
     }
   };
