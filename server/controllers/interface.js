@@ -20,9 +20,9 @@ const path = require('path');
 // const htmlCss = require("jsondiffpatch/public/formatters-styles/html.css");
 
 
-function handleHeaders(values){
+function handleHeaders(values) {
   let isfile = false,
-  isHavaContentType = false;
+    isHavaContentType = false;
   if (values.req_body_type === 'form') {
     values.req_body_form.forEach(item => {
       if (item.type === 'file') {
@@ -45,11 +45,11 @@ function handleHeaders(values){
   } else if (values.req_body_type === 'json') {
     values.req_headers
       ? values.req_headers.map(item => {
-          if (item.name === 'Content-Type') {
-            item.value = 'application/json';
-            isHavaContentType = true;
-          }
-        })
+        if (item.name === 'Content-Type') {
+          item.value = 'application/json';
+          isHavaContentType = true;
+        }
+      })
       : [];
     if (isHavaContentType === false) {
       values.req_headers = values.req_headers || [];
@@ -291,7 +291,7 @@ class interfaceController extends baseController {
         username: username,
         typeid: params.project_id
       });
-      this.projectModel.up(params.project_id, { up_time: new Date().getTime() }).then();
+      this.projectModel.up(params.project_id, {up_time: new Date().getTime()}).then();
     });
 
     ctx.body = yapi.commons.resReturn(result);
@@ -353,7 +353,6 @@ class interfaceController extends baseController {
     let result = await this.Model.getByPath(params.project_id, params.path, params.method, '_id res_body');
 
 
-
     if (result.length > 0) {
       result.forEach(async item => {
         params.id = item._id;
@@ -364,12 +363,13 @@ class interfaceController extends baseController {
           let data = {};
           data.params = validParams;
 
-          if(params.res_body_is_json_schema && params.dataSync === 'good'){
-            try{
+          if (params.res_body_is_json_schema && params.dataSync === 'good') {
+            try {
               let new_res_body = yapi.commons.json_parse(params.res_body)
               let old_res_body = yapi.commons.json_parse(item.res_body)
-              data.params.res_body = JSON.stringify(mergeJsonSchema(old_res_body, new_res_body),null,2);
-            }catch(err){}
+              data.params.res_body = JSON.stringify(mergeJsonSchema(old_res_body, new_res_body), null, 2);
+            } catch (err) {
+            }
           }
           //判断接口是否完成
           if (data.params.desc) {
@@ -384,7 +384,7 @@ class interfaceController extends baseController {
               data.params.uid = obj.uid;
             } else if (obj.userName) {
               let user = await this.userModel.findByName(obj.userName);
-              if(user && user._id) {
+              if (user && user._id) {
                 data.params.uid = user._id;
               }
             }
@@ -400,19 +400,26 @@ class interfaceController extends baseController {
         let data = {};
         //判断接口是否完成
         if (params.desc) {
-          let obj = JSON.parse(params.desc);
-          if (obj.status) {
-            params.status = obj.status;
-          } else {
-            params.status = 'undone';
+          let obj;
+          try {
+            obj = JSON.parse(params.desc);
+          } catch (e) {
+            console.error(e);
           }
-          params.desc = obj.desc;
-          if (obj.uid) {
-            params.uid = obj.uid;
-          } else if (obj.userName) {
-            let user = await this.userModel.findByName(obj.userName);
-            if(user && user._id) {
-              params.uid = user._id;
+          if(obj) {
+            if (obj.status) {
+              params.status = obj.status;
+            } else {
+              params.status = 'undone';
+            }
+            params.desc = obj.desc;
+            if (obj.uid) {
+              params.uid = obj.uid;
+            } else if (obj.userName) {
+              let user = await this.userModel.findByName(obj.userName);
+              if (user && user._id) {
+                params.uid = user._id;
+              }
             }
           }
         }
@@ -444,8 +451,8 @@ class interfaceController extends baseController {
 
     try {
       let result = await this.Model.get(params.id);
-      if(this.$tokenAuth){
-        if(params.project_id !== result.project_id){
+      if (this.$tokenAuth) {
+        if (params.project_id !== result.project_id) {
           ctx.body = yapi.commons.resReturn(null, 400, 'token有误')
           return;
         }
@@ -761,7 +768,7 @@ class interfaceController extends baseController {
     this.catModel.get(interfaceData.catid).then(cate => {
       let diffView2 = showDiffMsg(jsondiffpatch, formattersHtml, logData);
       if (diffView2.length <= 0) {
-          return; // 没有变化时，不写日志
+        return; // 没有变化时，不写日志
       }
       yapi.commons.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 
@@ -779,7 +786,7 @@ class interfaceController extends baseController {
       });
     });
 
-    this.projectModel.up(interfaceData.project_id, { up_time: new Date().getTime() }).then();
+    this.projectModel.up(interfaceData.project_id, {up_time: new Date().getTime()}).then();
     if (params.switch_notice === true) {
       let diffView = showDiffMsg(jsondiffpatch, formattersHtml, logData);
       let annotatedCss = fs.readFileSync(
@@ -883,12 +890,13 @@ class interfaceController extends baseController {
           typeid: cate.project_id
         });
       });
-      this.projectModel.up(data.project_id, { up_time: new Date().getTime() }).then();
+      this.projectModel.up(data.project_id, {up_time: new Date().getTime()}).then();
       ctx.body = yapi.commons.resReturn(result);
     } catch (err) {
       ctx.body = yapi.commons.resReturn(null, 402, err.message);
     }
   }
+
   // 处理编辑冲突
   async solveConflict(ctx) {
     try {
@@ -907,7 +915,7 @@ class interfaceController extends baseController {
         userinfo = await userInst.findById(result.edit_uid);
         data = {
           errno: result.edit_uid,
-          data: { uid: result.edit_uid, username: userinfo.username }
+          data: {uid: result.edit_uid, username: userinfo.username}
         };
       } else {
         this.Model.upEditUid(id, this.getUid()).then();
@@ -1167,7 +1175,8 @@ class interfaceController extends baseController {
       params.forEach(item => {
         if (item.id) {
           this.Model.upIndex(item.id, item.index).then(
-            res => {},
+            res => {
+            },
             err => {
               yapi.commons.log(err.message, 'error');
             }
@@ -1201,7 +1210,8 @@ class interfaceController extends baseController {
       params.forEach(item => {
         if (item.id) {
           this.catModel.upCatIndex(item.id, item.index).then(
-            res => {},
+            res => {
+            },
             err => {
               yapi.commons.log(err.message, 'error');
             }
