@@ -2,6 +2,7 @@ const _ = require('underscore');
 const axios = require('axios');
 const yapi = require('../server/yapi.js');
 const interfaceModel = require('../server/models/interface.js');
+const interfaceCatModel = require('../server/models/interfaceCat.js');
 
 
 const isNode = typeof global == 'object' && global.global === global;
@@ -48,6 +49,16 @@ async function handle(
             return false;
           }
           cat.id = result.data.data._id;
+        }
+      }
+
+      //删除多余的cat
+      for(let i = 0;i < menuList.length;i++){
+        let menu = menuList[i];
+        let findCat = _.find(cats, cat => cat.name === menu.name);
+        if(!findCat){
+          console.log('删除多余的cat [' + menu.name + ']');
+          await yapi.getInst(interfaceCatModel).del(menu._id);
         }
       }
     }
