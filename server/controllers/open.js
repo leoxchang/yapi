@@ -110,7 +110,7 @@ class openController extends baseController {
                   }
               });
           });
-      } 
+      }
       if(ctx.params.url){
         content = await syncGet(ctx.params.url);
       }else if(content.indexOf('http://') === 0 || content.indexOf('https://') === 0){
@@ -122,6 +122,9 @@ class openController extends baseController {
     }
 
     let menuList = await this.interfaceCatModel.list(project_id);
+    if(menuList == undefined || menuList == null || menuList[0] == undefined){
+      return
+    }
     let selectCatid = menuList[0]._id;
     let projectData = await this.projectModel.get(project_id);
     let res = await importDataModule[type](content);
@@ -365,7 +368,7 @@ class openController extends baseController {
   }
 
   async handleScriptTest(interfaceData, response, validRes, requestParams) {
-    
+
     try {
       let test = await yapi.commons.runCaseScript({
         response: response,
