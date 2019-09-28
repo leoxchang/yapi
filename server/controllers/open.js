@@ -123,7 +123,7 @@ class openController extends baseController {
 
     let menuList = await this.interfaceCatModel.list(project_id);
     if(menuList == undefined || menuList == null || menuList[0] == undefined){
-      return
+      return (ctx.body = yapi.commons.resReturn(null, 40022, '无法获取menuList'));
     }
     let selectCatid = menuList[0]._id;
     let projectData = await this.projectModel.get(project_id);
