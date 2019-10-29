@@ -122,10 +122,14 @@ class openController extends baseController {
     }
 
     let menuList = await this.interfaceCatModel.list(project_id);
+    let selectCatid = null;
     if(menuList == undefined || menuList == null || menuList[0] == undefined){
-      return (ctx.body = yapi.commons.resReturn(null, 40022, '无法获取' + project_id + '的menuList'));
+      //return (ctx.body = yapi.commons.resReturn(null, 40022, '无法获取' + project_id + '的menuList'));
+
+    } else {
+      selectCatid = menuList[0]._id;
     }
-    let selectCatid = menuList[0]._id;
+
     let projectData = await this.projectModel.get(project_id);
     let res = await importDataModule[type](content);
 

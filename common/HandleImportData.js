@@ -81,6 +81,12 @@ async function handle(
       return;
     }
     let upTime = yapi.commons.time();
+    //判断selectCatid是否为空
+    if(selectCatid == null) {
+      let menus = await yapi.getInst(interfaceCatModel).list(projectId);
+      selectCatid = menus[0]._id;
+    }
+
     for (let index = 0; index < res.length; index++) {
       let item = res[index];
       let data = Object.assign(item, {
