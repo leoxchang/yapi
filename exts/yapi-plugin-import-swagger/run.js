@@ -79,6 +79,8 @@ const compareVersions = require('compare-versions');
       res = await handleSwaggerData(res);
       SwaggerData = res;
 
+      interfaceData.basePath = res.basePath || '';
+
       if (res.tags && Array.isArray(res.tags)) {
         res.tags.forEach(tag => {
           interfaceData.cats.push({
@@ -99,10 +101,14 @@ const compareVersions = require('compare-versions');
             data = handleSwagger(api);
             if (data.catname) {
               if (!_.find(interfaceData.cats, item => item.name === data.catname)) {
-                interfaceData.cats.push({
-                  name: data.catname,
-                  desc: data.catname
-                });
+                if(interfaceData.cats.length === 0){
+                  interfaceData.cats.push({
+                    name: data.catname,
+                    desc: data.catname
+                  });
+                }else{
+                  delete data.catname
+                }
               }
             }
           } catch (err) {
@@ -113,6 +119,14 @@ const compareVersions = require('compare-versions');
           }
         });
       });
+
+      interfaceData.cats = interfaceData.cats.filter(catData=>{
+        let catName = catData.name;
+        return _.find(interfaceData.apis, apiData=>{
+          return apiData.catname === catName
+        })
+      })
+
       return interfaceData;
   }
 
@@ -123,9 +137,19 @@ const compareVersions = require('compare-versions');
     api.method = data.method.toUpperCase();
     api.title = data.summary || data.path;
     api.desc = data.description;
-    api.catname = data.tags && Array.isArray(data.tags) ? data.tags[data.tags.length - 1] : null;
-    api.tags = data.tags.slice(0,data.tags.length - 1);
 
+    api.catname = null;
+    if(data.tags && Array.isArray(data.tags)){
+      api.tag = data.tags;
+      for(let i=0; i< data.tags.length; i++){
+        if(/v[0-9\.]+/.test(data.tags[i])){
+          continue;
+        }
+        api.catname = data.tags[i];
+        break;
+      }
+
+    }
     api.path = handlePath(data.path);
     api.req_params = [];
     api.req_body_form = [];
@@ -191,6 +215,7 @@ const compareVersions = require('compare-versions');
           required: param.required ? '1' : '0'
         };
 
+        if (param.in) {
         switch (param.in) {
           case 'path':
             api.req_params.push(defaultParam);
@@ -209,6 +234,9 @@ const compareVersions = require('compare-versions');
             api.req_headers.push(defaultParam);
             break;
         }
+      } else {
+        api.req_query.push(defaultParam);
+      }
       });
     }
 

@@ -22,7 +22,7 @@ const path = require('path');
 
 function handleHeaders(values) {
   let isfile = false,
-    isHavaContentType = false;
+  isHaveContentType = false;
   if (values.req_body_type === 'form') {
     values.req_body_form.forEach(item => {
       if (item.type === 'file') {
@@ -33,10 +33,10 @@ function handleHeaders(values) {
     values.req_headers.map(item => {
       if (item.name === 'Content-Type') {
         item.value = isfile ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
-        isHavaContentType = true;
+        isHaveContentType = true;
       }
     });
-    if (isHavaContentType === false) {
+    if (isHaveContentType === false) {
       values.req_headers.unshift({
         name: 'Content-Type',
         value: isfile ? 'multipart/form-data' : 'application/x-www-form-urlencoded'
@@ -45,13 +45,13 @@ function handleHeaders(values) {
   } else if (values.req_body_type === 'json') {
     values.req_headers
       ? values.req_headers.map(item => {
-        if (item.name === 'Content-Type') {
-          item.value = 'application/json';
-          isHavaContentType = true;
-        }
-      })
+          if (item.name === 'Content-Type') {
+            item.value = 'application/json';
+            isHaveContentType = true;
+          }
+        })
       : [];
-    if (isHavaContentType === false) {
+    if (isHaveContentType === false) {
       values.req_headers = values.req_headers || [];
       values.req_headers.unshift({
         name: 'Content-Type',
