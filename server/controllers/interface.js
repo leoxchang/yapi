@@ -335,7 +335,7 @@ class interfaceController extends baseController {
       }
     }
     //设置tag
-    params.tag = ctx.request.body.tags;
+    params.tag = ctx.request.body.tags || [];
 
     params.method = params.method || 'GET';
     params.method = params.method.toUpperCase();

@@ -21,8 +21,8 @@ async function handle(
   port
 ) {
 
-  const taskNotice = _.throttle((index, len)=>{
-    messageSuccess(`正在导入，已执行任务 ${index+1} 个，共 ${len} 个`)
+  const taskNotice = _.throttle((index, len) => {
+    messageSuccess(`正在导入，已执行任务 ${index + 1} 个，共 ${len} 个`)
   }, 3000)
 
   const handleAddCat = async cats => {
@@ -46,6 +46,7 @@ async function handle(
             desc: cat.desc,
             token
           };
+          console.log('新增cat [' + cat.name + ']');
           let result = await axios.post(apipath, data);
 
           if (result.data.errcode) {
@@ -57,13 +58,15 @@ async function handle(
         }
       }
 
-      //删除多余的cat
-      for(let i = 0;i < menuList.length;i++){
-        let menu = menuList[i];
-        let findCat = _.find(cats, cat => cat.name === menu.name);
-        if(!findCat){
-          console.log('删除多余的cat [' + menu.name + ']');
-          await yapi.getInst(interfaceCatModel).del(menu._id);
+      //当cats的length大于零时,删除多余的cat
+      if(cats.length > 0) {
+        for (let i = 0; i < menuList.length; i++) {
+          let menu = menuList[i];
+          let findCat = _.find(cats, cat => cat.name === menu.name);
+          if (!findCat) {
+            console.log('删除多余的cat [' + menu.name + ']');
+            await yapi.getInst(interfaceCatModel).del(menu._id);
+          }
         }
       }
     }
@@ -88,12 +91,12 @@ async function handle(
     }
     let upTime = yapi.commons.time();
     //判断selectCatid是否为空
-    if(selectCatid == null) {
+    if (selectCatid == null) {
       let menus = await yapi.getInst(interfaceCatModel).list(projectId);
       selectCatid = menus[0]._id;
     }
 
-    if(info.basePath){
+    if (info.basePath) {
       let projectApiPath = '/api/project/up';
       if (isNode) {
         projectApiPath = 'http://127.0.0.1:' + port + projectApiPath;
