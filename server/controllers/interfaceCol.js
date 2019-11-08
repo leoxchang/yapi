@@ -46,6 +46,10 @@ class interfaceColController extends baseController {
         for(let j=0; j< caseList.length; j++){
           let item = caseList[j].toObject();
           let interfaceData = await this.interfaceModel.getBaseinfo(item.interface_id);
+          //判断接口是否删除
+          if(interfaceData == undefined || interfaceData == null){
+            continue;
+          }
           item.path = interfaceData.path;
           caseList[j] = item;
         }
@@ -54,7 +58,7 @@ class interfaceColController extends baseController {
           return a.index - b.index;
         });
         result[i].caseList = caseList;
-        
+
       }
       ctx.body = yapi.commons.resReturn(result);
     } catch (e) {
