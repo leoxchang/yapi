@@ -1,0 +1,38 @@
+# 部署命令
+# PROJECT_VERSION=latest \
+# REGISTRY_ADDR=xxx \
+
+version: "3"
+services:
+#  mongo:
+#    image: mongo:3.4
+#    container_name: mongo
+#    privileged: true
+#    restart: always
+#    networks:
+#      - yapi
+#    environment:
+#      - MONGO_INITDB_ROOT_USERNAME=yapi
+#      - MONGO_INITDB_ROOT_PASSWORD=yapi
+#      - MONGO_INITDB_DATABASE=yapi
+#    volumes:
+#      - ./mongo-data:/data/db
+  asr-yapi:
+    image: ${REGISTRY_ADDR:-192.168.1.20:5000}/asr-yapi:${PROJECT_VERSION:-latest}
+    container_name: asr-yapi
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    privileged: true
+    restart: always
+#    depends_on:
+#      - mongo
+    ports:
+      - "8000:3000"
+    networks:
+      - asr-yapi
+    volumes:
+      - /volume-data/yapi/config.json:/app/config.json
+      - /volume-data/yapi/runtime:/app/runtime
+networks:
+  asr-yapi:
