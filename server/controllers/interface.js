@@ -22,7 +22,7 @@ const path = require('path');
 
 function handleHeaders(values) {
   let isfile = false,
-  isHaveContentType = false;
+    isHaveContentType = false;
   if (values.req_body_type === 'form') {
     values.req_body_form.forEach(item => {
       if (item.type === 'file') {
@@ -45,11 +45,11 @@ function handleHeaders(values) {
   } else if (values.req_body_type === 'json') {
     values.req_headers
       ? values.req_headers.map(item => {
-          if (item.name === 'Content-Type') {
-            item.value = 'application/json';
-            isHaveContentType = true;
-          }
-        })
+        if (item.name === 'Content-Type') {
+          item.value = 'application/json';
+          isHaveContentType = true;
+        }
+      })
       : [];
     if (isHaveContentType === false) {
       values.req_headers = values.req_headers || [];
@@ -406,7 +406,7 @@ class interfaceController extends baseController {
           } catch (e) {
             console.error(e);
           }
-          if(obj) {
+          if (obj) {
             if (obj.status) {
               params.status = obj.status;
             } else {
@@ -761,7 +761,7 @@ class interfaceController extends baseController {
     let logData = {
       interface_id: id,
       cat_id: data.catid,
-      current: CurrentInterfaceData.toObject(),
+      current: CurrentInterfaceData ? CurrentInterfaceData.toObject() : null,
       old: interfaceData.toObject()
     };
 
