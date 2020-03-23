@@ -3,6 +3,7 @@ const axios = require('axios');
 const yapi = require('../server/yapi.js');
 const interfaceModel = require('../server/models/interface.js');
 const interfaceCatModel = require('../server/models/interfaceCat.js');
+const logModel = require('../server/models/log.js');
 
 
 const isNode = typeof global == 'object' && global.global === global;
@@ -59,7 +60,7 @@ async function handle(
       }
 
       //当cats的length大于零时,删除多余的cat
-      if(cats.length > 0) {
+      if (cats.length > 0) {
         for (let i = 0; i < menuList.length; i++) {
           let menu = menuList[i];
           let findCat = _.find(cats, cat => cat.name === menu.name);
@@ -168,11 +169,22 @@ async function handle(
 
       if (count === len) {
         callback({showLoading: false});
-        //删除接口
-        await yapi.getInst(interfaceModel).findByUpTime(projectId, upTime);
-        let delRes = await yapi.getInst(interfaceModel).delUnUsed(projectId, upTime);
-        let delNum = delRes.n;
-        messageSuccess(`成功导入接口 ${successNum} 个, 已存在的接口 ${existNum} 个,删除接口${delNum}个`);
+        //删除接口,2s后执行删除接口
+        setTimeout(async () => {
+          let delRes = await yapi.getInst(interfaceModel).delUnUsed(projectId, upTime);
+          let delNum = delRes.n;
+          let data = {
+            projectId: projectId,
+            type: 'project',
+            uid: 11,
+            username: '自动同步用户',
+            typeid: selectCatid,
+            addTime: new Date().getTime(),
+            content: `删除接口${delNum}个`
+          };
+          await yapi.getInst(logModel).save(data);
+        }, 2000);
+        messageSuccess(`成功导入接口 ${successNum} 个, 已存在的接口 ${existNum} 个`);
         return;
       }
 
