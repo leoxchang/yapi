@@ -142,9 +142,9 @@ const compareVersions = require('compare-versions');
     if(data.tags && Array.isArray(data.tags)){
       api.tag = data.tags;
       for(let i=0; i< data.tags.length; i++){
-        if(/v[0-9\.]+/.test(data.tags[i])){
-          continue;
-        }
+        // if(/v[0-9\.]+/.test(data.tags[i])){
+        //   continue;
+        // }
 
         // 如果根路径有 tags，使用根路径 tags,不使用每个接口定义的 tag 做完分类
         if(originTags.length > 0 && _.find(originTags, item=>{
@@ -158,7 +158,7 @@ const compareVersions = require('compare-versions');
           api.catname = data.tags[i];
           break;
         }
-        
+
       }
 
     }
