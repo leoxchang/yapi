@@ -356,7 +356,7 @@ class interfaceController extends baseController {
 
 
     if (result.length > 0) {
-      result.forEach(async item => {
+      for (const item of result) {
         params.id = item._id;
         // console.log(this.schemaMap['up'])
         let validParams = Object.assign({}, params)
@@ -393,9 +393,9 @@ class interfaceController extends baseController {
           }
           await this.up(data);
         } else {
-          return (ctx.body = yapi.commons.resReturn(null, 400, validResult.message));
+          (ctx.body = yapi.commons.resReturn(null, 400, validResult.message));
         }
-      });
+      }
     } else {
       let validResult = yapi.commons.validateParams(this.schemaMap['add'], params);
       if (validResult.valid) {
